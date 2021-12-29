@@ -1,3 +1,5 @@
+
+"""
 from django import http
 from django.conf import settings
 from django.urls import include, path
@@ -48,6 +50,3 @@ if settings.FORCE_STATIC_FILE_SERVING and not settings.DEBUG:
 
 admin.site.site_header = "Heimdall Admin"
 admin.site.site_title = "Heimdall Admin Portal"
-admin.site.index_title = "Heimdall to Finder Researcher Portal"
-
-"""
