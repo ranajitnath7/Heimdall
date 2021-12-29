@@ -32,6 +32,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+     'applicant',
+    'applications',
+    'institution',
+    'transaction',
+    'settings',
+    # 3P Apps
+    'crispy_forms',
+    'ckeditor',
+    'ckeditor_uploader',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [

@@ -20,12 +20,12 @@ from accounts.views import HomeLoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls', namespace='accounts')),
- #   path('applicant/', include('applicant.urls', namespace='applicant')),
- #   path('institution/', include('institution.urls', namespace='institution')),
- #   path('applications/', include('applications.urls', namespace='applications')),
- #   path('transaction/', include('transaction.urls', namespace='transaction')),
- #   path('settings/', include('settings.urls', namespace='settings')),
- #  path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('applicant/', include('applicant.urls', namespace='applicant')),
+    path('institution/', include('institution.urls', namespace='institution')),
+    path('applications/', include('applications.urls', namespace='applications')),
+    path('transaction/', include('transaction.urls', namespace='transaction')),
+    path('settings/', include('settings.urls', namespace='settings')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', HomeLoginView.as_view(), name="home_login"),
 ]
 
