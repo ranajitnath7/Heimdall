@@ -1,15 +1,13 @@
+#from django import http
+#from django.conf import settings
+#from django.urls import include, path
+#from django.contrib import admin
 
-"""
-from django import http
-from django.conf import settings
-from django.urls import include, path
-from django.contrib import admin
+#urlpatterns = [
+#    path('health', lambda req: http.HttpResponse(200)),
+#    path('admin/', admin.site.urls),
+#]
 
-urlpatterns = [
-    path('health', lambda req: http.HttpResponse(200)),
-    path('admin/', admin.site.urls),
-]
-"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
@@ -50,3 +48,5 @@ if settings.FORCE_STATIC_FILE_SERVING and not settings.DEBUG:
 
 admin.site.site_header = "Heimdall Admin"
 admin.site.site_title = "Heimdall Admin Portal"
+admin.site.index_title = "Heimdall to Finder Researcher Portal"
+
