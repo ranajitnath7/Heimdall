@@ -93,8 +93,7 @@ class AdmissionSession(models.Model):
         super(AdmissionSession, self).save(*args, **kwargs)
 
         if create_task and self.end_time:
-            set_admission_as_inactive.apply_async(
-                args=[self.id], eta=self.end_time)
+            set_admission_as_inactive.apply_async(args=[self.id], eta=self.end_time)
 
     def __str__(self):
         return self.session_name
