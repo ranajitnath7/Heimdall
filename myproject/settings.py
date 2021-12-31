@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 ]
 
 JQUERY_URL = True
-CKEDITOR_UPLOAD_PATH = os.path.join(BASE_DIR, 'templates/ck_editor/')
+CKEDITOR_UPLOAD_PATH = os.path.join(BASE_DIR, '/ck_editor/')
 CKEDITOR_RESTRICT_BY_USER = True
 
 SITE_ID = 1
@@ -109,14 +109,11 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASE_NAME', 'ferme'),
-        'USER': os.getenv('DATABASE_USER', os.getenv('USER')),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
-        'HOST': os.getenv('POSTGRESQL_SERVICE_HOST', None),
-        'PORT': os.getenv('POSTGRESQL_SERVICE_PORT', None),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
 
 # Password validation
 # https://docs.djangomyproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -160,7 +157,7 @@ FORCE_STATIC_FILE_SERVING = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'myproject/static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'myproject/static')
@@ -168,8 +165,8 @@ STATICFILES_DIRS = [
 
 
 # Media settings
-MEDIA_ROOT = os.path.join(BASE_DIR, 'templates/media')
-MEDIA_URL = 'templates/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 
 MESSAGE_TAGS = {
