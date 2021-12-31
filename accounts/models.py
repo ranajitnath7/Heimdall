@@ -3,7 +3,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
-
+from institution.models import InstitutionProfile
 # Create your models here.
 
 
@@ -48,7 +48,6 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
-    from institution.models import InstitutionProfile
     try:
         if created:
             Profile.objects.create(user=instance)
