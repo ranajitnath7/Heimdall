@@ -1,21 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from accounts.mixins import AictiveUserRequiredMixin, AictiveApplicantRequiredMixin, AictiveInstitutionRequiredMixin
+from accounts.mixins import ActiveApplicantRequiredMixin
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.contrib.auth import get_user_model
-
-from applicant.models import ApplicantPrevEducation, ApplicantProfile
-from applicant.forms import ApplicantProfileForm, ApplicantPrevEducationForm, ApplicantPrevEducationFormSet
+from applicant.models import ApplicantProfile
 
 from institution.models import InstitutionProfile, AdmissionSession, InstitutionSubject
-
-from institution.forms import AdmissionSessionForm, InstitutionSubjectForm
-
-from transaction.models import InstitutionTransactionMethod, ApplicationPayment
-from transaction.forms import InstitutionTransactionMethodForm, ApplicationPaymentForm
 
 from applications.models import Application
 from applications.forms import ApplicationForm
@@ -31,7 +21,7 @@ def load_subjects(request):
     return render(request, 'applicant/applications/subject_dropdown_list_options.html', {'subjects': subjects})
 
 
-class ApplyApplicationView(AictiveApplicantRequiredMixin, View):
+class ApplyApplicationView(ActiveApplicantRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         applicant_id = kwargs.get('applicant_id')
         applicant_obj = get_object_or_404(
@@ -117,7 +107,7 @@ class ApplyApplicationView(AictiveApplicantRequiredMixin, View):
             return render(request, 'applicant/applications/apply.html', context)
 
 
-class ApplicationListView(AictiveApplicantRequiredMixin, generic.ListView):
+class ApplicationListView(ActiveApplicantRequiredMixin, generic.ListView):
     model = Application
     template_name = 'applicant/applications/applications_list.html'
     context_object_name = 'all_application'
@@ -142,7 +132,7 @@ class ApplicationListView(AictiveApplicantRequiredMixin, generic.ListView):
     #     return render(request, 'applicant/applications/applications_list.html', context)
 
 
-class DeleteApplicationView(AictiveApplicantRequiredMixin, generic.edit.DeleteView):
+class DeleteApplicationView(ActiveApplicantRequiredMixin, generic.edit.DeleteView):
     model = Application
     template_name = 'applicant/applications/delete_application.html'
     success_message = "Application was deleted successfully"
@@ -153,7 +143,7 @@ class DeleteApplicationView(AictiveApplicantRequiredMixin, generic.edit.DeleteVi
         context['title'] = 'Delete Application'
         return context
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **kwargs):
         if self.object.status == '1':
             messages.info(
                 self.request, 'Sorry You Can Not Delete Application After Completed')

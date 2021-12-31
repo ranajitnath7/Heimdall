@@ -2,37 +2,24 @@ from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.core import serializers
-import json
 from django.urls import reverse_lazy
-from accounts.mixins import AictiveUserRequiredMixin, AictiveApplicantRequiredMixin, AictiveInstitutionRequiredMixin
+from accounts.mixins import ActiveInstitutionRequiredMixin
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from .render import Render
 from django.core.files import File
 from io import BytesIO
-from django.contrib.auth import get_user_model
-
 from applicant.models import ApplicantPrevEducation, ApplicantProfile
-from applicant.forms import ApplicantProfileForm, ApplicantPrevEducationForm, ApplicantPrevEducationFormSet
-
 from institution.models import InstitutionProfile, AdmissionSession, InstitutionSubject, InstituteInstruction
-
-
 from institution.forms import AdmissionSessionForm, InstitutionSubjectForm, InstituteSearchForm, InstituteInstructionForm, SubscriptionForm
-
-from transaction.models import InstitutionTransactionMethod, ApplicationPayment
-from transaction.forms import InstitutionTransactionMethodForm, ApplicationPaymentForm
-
 from applications.models import Application
-from applications.forms import ApplicationForm
 from django.views import View, generic
 
 
 # Create your views here.
 
 
-class AdmissionSessionView(AictiveInstitutionRequiredMixin, generic.ListView):
+class AdmissionSessionView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = AdmissionSession
     context_object_name = 'admission_session'
     template_name = 'institution/session/adminssion_session.html'
@@ -50,7 +37,7 @@ class AdmissionSessionView(AictiveInstitutionRequiredMixin, generic.ListView):
         context['title'] = 'Admission Session'
         return context
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **kwargs):
         try:
             qs = AdmissionSession.objects.select_related('institute').filter(
                 institute=self.request.user.user_institute).first()
@@ -60,7 +47,7 @@ class AdmissionSessionView(AictiveInstitutionRequiredMixin, generic.ListView):
         return super().render_to_response(context)
 
 
-class CreateInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.CreateView):
+class CreateInstitutionSession(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.CreateView):
     model = AdmissionSession
     form_class = AdmissionSessionForm
     template_name = 'institution/session/create_session.html'
@@ -78,7 +65,7 @@ class CreateInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMi
         self.object.institute = self.request.user.user_institute
         return super(CreateInstitutionSession, self).form_valid(form)
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **kwargs):
         qs = AdmissionSession.objects.filter(
             institute=self.request.user.user_institute).first()
         if qs:
@@ -87,7 +74,7 @@ class CreateInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMi
         return super().render_to_response(context)
 
 
-class UpdateInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.UpdateView):
+class UpdateInstitutionSession(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.UpdateView):
     model = AdmissionSession
     form_class = AdmissionSessionForm
     context_object_name = 'admission_session'
@@ -107,7 +94,7 @@ class UpdateInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMi
         return super(UpdateInstitutionSession, self).form_valid(form)
 
 
-class DeleteInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.DeleteView):
+class DeleteInstitutionSession(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.DeleteView):
     model = AdmissionSession
     template_name = 'institution/session/delete_session.html'
     success_message = "Admission Session was deleted successfully"
@@ -123,7 +110,7 @@ class DeleteInstitutionSession(SuccessMessageMixin, AictiveInstitutionRequiredMi
         return super(DeleteInstitutionSession, self).delete(request, *args, **kwargs)
 
 
-class MyInstituteView(AictiveInstitutionRequiredMixin, generic.ListView):
+class MyInstituteView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = InstitutionProfile
     context_object_name = 'my_institute'
     template_name = 'institution/institute/my_institute.html'
@@ -138,7 +125,7 @@ class MyInstituteView(AictiveInstitutionRequiredMixin, generic.ListView):
         return context
 
 
-class MyInstituteEditView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.UpdateView):
+class MyInstituteEditView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.UpdateView):
     model = InstitutionProfile
     context_object_name = 'my_institute'
     fields = ('institute_name', 'application_fee', 'institute_city', 'institute_location',
@@ -153,7 +140,7 @@ class MyInstituteEditView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, 
         return context
 
 
-class MyInstituteSubjectView(AictiveInstitutionRequiredMixin, generic.ListView):
+class MyInstituteSubjectView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = InstitutionSubject
     paginate_by = 10
     context_object_name = 'all_subject'
@@ -170,7 +157,7 @@ class MyInstituteSubjectView(AictiveInstitutionRequiredMixin, generic.ListView):
         return context
 
 
-class AddMyInstituteSubjectView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.CreateView):
+class AddMyInstituteSubjectView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.CreateView):
     model = InstitutionSubject
     form_class = InstitutionSubjectForm
     template_name = 'institution/subjects/add_subject.html'
@@ -188,7 +175,7 @@ class AddMyInstituteSubjectView(SuccessMessageMixin, AictiveInstitutionRequiredM
         return super(AddMyInstituteSubjectView, self).form_valid(form)
 
 
-class EditMyInstituteSubjectView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.UpdateView):
+class EditMyInstituteSubjectView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.UpdateView):
     model = InstitutionSubject
     context_object_name = 'subject'
     form_class = InstitutionSubjectForm
@@ -207,7 +194,7 @@ class EditMyInstituteSubjectView(SuccessMessageMixin, AictiveInstitutionRequired
         return super(EditMyInstituteSubjectView, self).form_valid(form)
 
 
-class DeleteMyInstituteSubjectView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.DeleteView):
+class DeleteMyInstituteSubjectView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.DeleteView):
     model = InstitutionSubject
     template_name = 'institution/subjects/delete_subject.html'
     success_message = "Subject was deleted successfully"
@@ -223,7 +210,7 @@ class DeleteMyInstituteSubjectView(SuccessMessageMixin, AictiveInstitutionRequir
         return super(DeleteMyInstituteSubjectView, self).delete(request, *args, **kwargs)
 
 
-class PendingApplicationView(AictiveInstitutionRequiredMixin, generic.ListView):
+class PendingApplicationView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = Application
     paginate_by = 10
     context_object_name = 'pending_applications'
@@ -240,7 +227,7 @@ class PendingApplicationView(AictiveInstitutionRequiredMixin, generic.ListView):
         return context
 
 
-class AcceptedApplicationView(AictiveInstitutionRequiredMixin, generic.ListView):
+class AcceptedApplicationView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = Application
     paginate_by = 10
     context_object_name = 'accepted_applications'
@@ -257,7 +244,7 @@ class AcceptedApplicationView(AictiveInstitutionRequiredMixin, generic.ListView)
         return context
 
 
-class ApplicantProfileView(AictiveInstitutionRequiredMixin, View):
+class ApplicantProfileView(ActiveInstitutionRequiredMixin, View):
     def get(self, requestm, *args, **kwargs):
         applicant_id = kwargs.get('applicant_id')
         applicant_obj = get_object_or_404(ApplicantProfile, pk=applicant_id)
@@ -270,7 +257,7 @@ class ApplicantProfileView(AictiveInstitutionRequiredMixin, View):
         return HttpResponse(data, content_type='application/json')
 
 
-class ApplicantAdmitCardView(AictiveInstitutionRequiredMixin, View):
+class ApplicantAdmitCardView(ActiveInstitutionRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         application_id = kwargs.get('application_id')
         application_obj = get_object_or_404(Application, id=application_id)
@@ -325,7 +312,7 @@ class InstituteSearchView(generic.ListView):
         return context
 
 
-class InstituteInstructionView(AictiveInstitutionRequiredMixin, generic.ListView):
+class InstituteInstructionView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = InstituteInstruction
     context_object_name = 'instruction_list'
     template_name = 'institution/instruction/instruction_list.html'
@@ -341,7 +328,7 @@ class InstituteInstructionView(AictiveInstitutionRequiredMixin, generic.ListView
         return context
 
 
-class CreateInstructionView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.CreateView):
+class CreateInstructionView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.CreateView):
     model = InstituteInstruction
     form_class = InstituteInstructionForm
     template_name = 'institution/instruction/create_instruction.html'
@@ -361,7 +348,7 @@ class CreateInstructionView(SuccessMessageMixin, AictiveInstitutionRequiredMixin
         return super(CreateInstructionView, self).form_valid(form)
 
 
-class EditInstructionView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.UpdateView):
+class EditInstructionView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.UpdateView):
     model = InstituteInstruction
     form_class = InstituteInstructionForm
     context_object_name = 'instruction_obj'
@@ -380,7 +367,7 @@ class EditInstructionView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, 
         return super(EditInstructionView, self).form_valid(form)
 
 
-class DeleteInstructionView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.DeleteView):
+class DeleteInstructionView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.DeleteView):
     model = InstituteInstruction
     template_name = 'institution/instruction/delete_instruction.html'
     success_message = "Instruction was deleted successfully"

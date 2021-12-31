@@ -1,32 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.urls import reverse_lazy
-from accounts.mixins import AictiveUserRequiredMixin, AictiveApplicantRequiredMixin, AictiveInstitutionRequiredMixin
+from accounts.mixins import  ActiveApplicantRequiredMixin, ActiveInstitutionRequiredMixin
 from django.contrib import messages
 from django.core import serializers
-import json
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import get_user_model
-
-from applicant.models import ApplicantPrevEducation, ApplicantProfile
-from applicant.forms import ApplicantProfileForm, ApplicantPrevEducationForm, ApplicantPrevEducationFormSet
-
-from institution.models import InstitutionProfile, AdmissionSession, InstitutionSubject
-
-from institution.forms import AdmissionSessionForm, InstitutionSubjectForm
-
+from institution.models import InstitutionProfile
 from transaction.models import InstitutionTransactionMethod, ApplicationPayment
 from transaction.forms import InstitutionTransactionMethodForm, ApplicationPaymentForm
-
 from applications.models import Application
-from applications.forms import ApplicationForm
-
 from django.views import View, generic
 
 # Create your views here.
 
 
-class TransactionDetailsView(AictiveApplicantRequiredMixin, View):
+class TransactionDetailsView(ActiveApplicantRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         transaction_id = kwargs.get('transaction_id')
         transaction_details = InstitutionTransactionMethod.objects.filter(
@@ -35,7 +22,7 @@ class TransactionDetailsView(AictiveApplicantRequiredMixin, View):
         return HttpResponse(data, content_type='application/json')
 
 
-class TransactionMethodView(AictiveInstitutionRequiredMixin, generic.ListView):
+class TransactionMethodView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = InstitutionTransactionMethod
     paginate_by = 10
     context_object_name = 'all_transaction_method'
@@ -55,7 +42,7 @@ class TransactionMethodView(AictiveInstitutionRequiredMixin, generic.ListView):
         return context
 
 
-class AddTransactionMethodView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.CreateView):
+class AddTransactionMethodView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.CreateView):
     model = InstitutionTransactionMethod
     form_class = InstitutionTransactionMethodForm
     template_name = 'institution/transaction/create_transaction_method.html'
@@ -74,7 +61,7 @@ class AddTransactionMethodView(SuccessMessageMixin, AictiveInstitutionRequiredMi
         return super(AddTransactionMethodView, self).form_valid(form)
 
 
-class EditTransactionMethodView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.UpdateView):
+class EditTransactionMethodView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.UpdateView):
     model = InstitutionTransactionMethod
     context_object_name = 'transaction_method'
     form_class = InstitutionTransactionMethodForm
@@ -94,7 +81,7 @@ class EditTransactionMethodView(SuccessMessageMixin, AictiveInstitutionRequiredM
         return super(EditTransactionMethodView, self).form_valid(form)
 
 
-class DeleteTransactionMethodView(SuccessMessageMixin, AictiveInstitutionRequiredMixin, generic.edit.DeleteView):
+class DeleteTransactionMethodView(SuccessMessageMixin, ActiveInstitutionRequiredMixin, generic.edit.DeleteView):
     model = InstitutionTransactionMethod
     template_name = 'institution/transaction/delete_transaction_method.html'
     success_message = "Transaction Method was deleted successfully"
@@ -110,7 +97,7 @@ class DeleteTransactionMethodView(SuccessMessageMixin, AictiveInstitutionRequire
         return super(DeleteTransactionMethodView, self).delete(request, *args, **kwargs)
 
 
-class ApplicantPaymentListView(AictiveApplicantRequiredMixin, generic.ListView):
+class ApplicantPaymentListView(ActiveApplicantRequiredMixin, generic.ListView):
     model = ApplicationPayment
     context_object_name = 'payment_list'
     template_name = 'applicant/transaction/payment_list.html'
@@ -127,7 +114,7 @@ class ApplicantPaymentListView(AictiveApplicantRequiredMixin, generic.ListView):
         return context
 
 
-class PayApplicationFeeView(AictiveApplicantRequiredMixin, View):
+class PayApplicationFeeView(ActiveApplicantRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         application_id = kwargs.get('application_id')
         institute_id = kwargs.get('institute_id')
@@ -179,7 +166,7 @@ class PayApplicationFeeView(AictiveApplicantRequiredMixin, View):
             return render(request, 'applicant/transaction/pay_fee.html', context)
 
 
-class InstitutePaymentListView(AictiveInstitutionRequiredMixin, generic.ListView):
+class InstitutePaymentListView(ActiveInstitutionRequiredMixin, generic.ListView):
     model = ApplicationPayment
     context_object_name = 'payment_list'
     template_name = 'institution/transaction/payment_list.html'
@@ -196,7 +183,7 @@ class InstitutePaymentListView(AictiveInstitutionRequiredMixin, generic.ListView
         return context
 
 
-class InstitutePaymentCheckView(AictiveInstitutionRequiredMixin, View):
+class InstitutePaymentCheckView(ActiveInstitutionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         status = request.POST.get('status')
 

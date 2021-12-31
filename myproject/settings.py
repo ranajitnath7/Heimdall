@@ -1,34 +1,26 @@
 import os
 from django.contrib.messages import constants as messages
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+# Build paths inside the myproject like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
+# See https://docs.djangomyproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# The SECRET_KEY is provided via an environment variable in OpenShift
-SECRET_KEY = os.getenv(
-    'DJANGO_SECRET_KEY',
-    # safe value used for development when DJANGO_SECRET_KEY might not be set
-    '9e4@&tw46$l31)zrqe3wi+-slqm(ruvz&se0^%9#6(_w3ui!c0'
-)
+SECRET_KEY = 'yq-qvbx4fd%ayu&b(p7ynp9nt!cwgb&3!6@yo2umbu!dn&v*ri'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1']
+
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     # Apps
     'accounts',
     'applicant',
@@ -36,26 +28,59 @@ INSTALLED_APPS = [
     'institution',
     'transaction',
     'settings',
-    # 3P Apps
+
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    # Third Party Apps
     'crispy_forms',
     'ckeditor',
     'ckeditor_uploader',
     'debug_toolbar',
+
 ]
+
+JQUERY_URL = True
+CKEDITOR_UPLOAD_PATH = os.path.join(BASE_DIR, 'templates/ck_editor/')
+CKEDITOR_RESTRICT_BY_USER = True
+
+SITE_ID = 1
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+AUTH_USER_MODEL = 'accounts.User'
+
+CELERY_BROKER_URL = 'amqp://localhost'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'width': '100%'
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-ROOT_URLCONF = 'project.urls'
+INTERNAL_IPS = [
+    # ...
+    '127.0.0.1',
+    # ...
+]
+
+ROOT_URLCONF = 'myproject.urls'
 
 TEMPLATES = [
     {
@@ -68,20 +93,24 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'institution.context_processors.on_going_admission',
+                'institution.context_processors.all_institute_profile',
+                'settings.context_processors.site_info',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'myproject.wsgi.application'
+
 
 # Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+# https://docs.djangomyproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASE_NAME', ),
+        'NAME': os.getenv('DATABASE_NAME', 'ferme'),
         'USER': os.getenv('DATABASE_USER', os.getenv('USER')),
         'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
         'HOST': os.getenv('POSTGRESQL_SERVICE_HOST', None),
@@ -90,7 +119,7 @@ DATABASES = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
+# https://docs.djangomyproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -107,8 +136,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_REDIRECT_URL = 'accounts:login_success'
+
+
 # Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
+# https://docs.djangomyproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -120,47 +152,33 @@ USE_L10N = True
 
 USE_TZ = True
 
+
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
+# https://docs.djangomyproject.com/en/3.0/howto/static-files/
+
 FORCE_STATIC_FILE_SERVING = True
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'myproject/static')
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'project/static')
+    os.path.join(BASE_DIR, 'myproject/static')
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 # Media settings
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'templates/media')
+MEDIA_URL = 'templates/media/'
+
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-INTERNAL_IPS = ['127.0.0.1', '*']
-
-JQUERY_URL = True
-CKEDITOR_UPLOAD_PATH = os.path.join(BASE_DIR, 'ck_editor')
-CKEDITOR_RESTRICT_BY_USER = True
-
-SITE_ID = 1
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-AUTH_USER_MODEL = 'accounts.User'
-
-CELERY_BROKER_URL = 'amqp://localhost'
-
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'width': '100%'
-    }
-}
-
-LOGIN_REDIRECT_URL = 'accounts:login_success'
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = os.getenv('EMAIL_HOST', ),
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', ),
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', ),
-EMAIL_PORT = os.getenv('EMAIL_PORT', ),
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'ferme')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', )
+EMAIL_PORT = 587

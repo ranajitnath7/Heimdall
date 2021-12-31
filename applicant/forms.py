@@ -2,7 +2,6 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 from .models import ApplicantPrevEducation, ApplicantProfile
-from django.contrib.auth import get_user_model
 
 
 class DateInput(forms.DateInput):

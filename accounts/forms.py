@@ -1,11 +1,8 @@
 from django import forms
 from django.forms import FileInput
-from django.forms import ModelForm
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from .models import Profile
-from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
@@ -66,7 +63,7 @@ class UserForm(forms.ModelForm):
 
 class ProfileForm(forms.ModelForm):
     profile_pic = forms.ImageField(
-        label=('Profile Pic'), required=False, widget=FileInput)
+        label='Profile Pic', required=False, widget=FileInput)
 
     class Meta:
         model = Profile

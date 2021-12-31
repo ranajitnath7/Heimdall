@@ -1,4 +1,3 @@
-from .models import Profile
 from django.utils.html import format_html
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin

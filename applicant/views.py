@@ -1,17 +1,14 @@
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.shortcuts import redirect, get_object_or_404, HttpResponse
 from django.urls import reverse_lazy
 from django.db import transaction
-from accounts.mixins import AictiveUserRequiredMixin, AictiveApplicantRequiredMixin
+from accounts.mixins import ActiveApplicantRequiredMixin
 from django.contrib import messages
 from django.core import serializers
-import json
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
 from applications.models import Application
 from .forms import ApplicantPrevEducationFormSet, ApplicantProfileForm
-from django.contrib.auth import get_user_model
 from .models import ApplicantPrevEducation, ApplicantProfile
-from django.views import View, generic
+from django.views import generic
 # Create your views here.
 
 
@@ -31,7 +28,7 @@ class ApplicantProfileView(generic.ListView):
         return context
 
 
-class CreateApplicantProfileView(SuccessMessageMixin, AictiveApplicantRequiredMixin, generic.CreateView):
+class CreateApplicantProfileView(SuccessMessageMixin, ActiveApplicantRequiredMixin, generic.CreateView):
     model = ApplicantProfile
     form_class = ApplicantProfileForm
     template_name = 'applicant/applicant/create_applicant_profile.html'
@@ -63,7 +60,7 @@ class CreateApplicantProfileView(SuccessMessageMixin, AictiveApplicantRequiredMi
             else:
                 return self.render_to_response(self.get_context_data(form=form))
 
-class EditApplicantProfileView(SuccessMessageMixin, AictiveApplicantRequiredMixin, generic.UpdateView):
+class EditApplicantProfileView(SuccessMessageMixin, ActiveApplicantRequiredMixin, generic.UpdateView):
     model = ApplicantProfile
     context_object_name = 'applicant_profile'
     form_class = ApplicantProfileForm
@@ -100,7 +97,7 @@ class EditApplicantProfileView(SuccessMessageMixin, AictiveApplicantRequiredMixi
                 return self.render_to_response(self.get_context_data(form=form))
 
 
-class DeleteApplicantProfileView(SuccessMessageMixin, AictiveApplicantRequiredMixin, generic.edit.DeleteView):
+class DeleteApplicantProfileView(SuccessMessageMixin, ActiveApplicantRequiredMixin, generic.edit.DeleteView):
     model = ApplicantProfile
     template_name = 'applicant/applicant/delete_applicant_profile.html'
     success_message = "Applicant Profile was deleted successfully"
@@ -116,7 +113,7 @@ class DeleteApplicantProfileView(SuccessMessageMixin, AictiveApplicantRequiredMi
         return super(DeleteApplicantProfileView, self).delete(request, *args, **kwargs)
 
 
-class ApplicationStatusView(AictiveApplicantRequiredMixin, generic.edit.DeleteView):
+class ApplicationStatusView(ActiveApplicantRequiredMixin, generic.edit.DeleteView):
     def get(self, request, *args, **kwargs):
         applicant_id = kwargs.get('applicant_id')
         applicant_obj = get_object_or_404(ApplicantProfile, id=applicant_id)
@@ -127,7 +124,7 @@ class ApplicationStatusView(AictiveApplicantRequiredMixin, generic.edit.DeleteVi
         return HttpResponse(data, content_type='application/json')
 
 
-class ApplicantAdmitCardView(AictiveApplicantRequiredMixin, generic.ListView):
+class ApplicantAdmitCardView(ActiveApplicantRequiredMixin, generic.ListView):
     model = Application
     context_object_name = 'applicant_admit_card'
     template_name = 'applicant/admit_card/admit_card.html'

@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth import get_user_model
 from settings.models import ApplicationInstruction
-from .mixins import AictiveUserRequiredMixin, AictiveApplicantRequiredMixin, AictiveInstitutionRequiredMixin
+from .mixins import ActiveUserRequiredMixin, ActiveApplicantRequiredMixin, ActiveInstitutionRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import SignUpForm, UserForm, ProfileForm
 from django.contrib.auth.views import LoginView
@@ -26,21 +26,19 @@ class HomeLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Heimdall.com'
+        context['title'] = 'VortiBd.com'
         context['subscription_form'] = SubscriptionForm()
         context['institute_search_form'] = InstituteSearchForm()
         return context
 
     def render_to_response(self, context):
-        if self.request.user.is_authenticated \
-                and self.request.user.user_profile.active \
-                and self.request.user.user_profile.email_confirmed:
+        if self.request.user.is_authenticated and self.request.user.user_profile.active and self.request.user.user_profile.email_confirmed:
             return redirect('accounts:login_success')
         return super().render_to_response(context)
 
 
 class RegisterView(View):
-    def get(self, request, *args):
+    def get(self, request, *args, **kwrags):
         signup_form = SignUpForm()
         context = {
             'signup_form': signup_form,
@@ -90,14 +88,14 @@ def activate(request, uidb64, token):
         user.user_profile.email_confirmed = True
         user.user_profile.save()
         messages.success(
-            request, 'Thank You For Confirm The Email.Your Account Will Be Activated Soon')
+            request, ('Thank You For Confirm The Email.Your Account Will Be Activated Soon'))
         return redirect('home_login')
     else:
-        messages.success(request, 'Activation link is invalid!')
+        messages.success(request, ('Activation link is invalid!'))
         return redirect('home_login')
 
 
-class MyProfileView(AictiveUserRequiredMixin, View):
+class MyProfileView(ActiveUserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user_form = UserForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.user_profile)
@@ -137,7 +135,7 @@ class MyProfileView(AictiveUserRequiredMixin, View):
                 return render(request, 'institution/accounts/my_profile.html', context)
 
 
-class ChangePasswordView(AictiveUserRequiredMixin, View):
+class ChangePasswordView(ActiveUserRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         password_changeform = PasswordChangeForm(request.user)
         context = {
@@ -188,7 +186,7 @@ class LoginSuccess(View):
 
 
 # Institution Holder Views Start
-class InstitutionDashboardView(AictiveInstitutionRequiredMixin, View):
+class InstitutionDashboardView(ActiveInstitutionRequiredMixin, View):
     def get(self, request, *args, **kwrags):
         user_obj = request.user
         user_profile = user_obj.user_profile
@@ -217,7 +215,7 @@ class InstitutionDashboardView(AictiveInstitutionRequiredMixin, View):
 
 
 # Applicant Holder Views Start
-class ApplicantDashboardView(AictiveApplicantRequiredMixin, View):
+class ApplicantDashboardView(ActiveApplicantRequiredMixin, View):
     def get(self, request, *args, **kwrags):
         user_obj = request.user
         user_profile = user_obj.user_profile

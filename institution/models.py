@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from ckeditor.fields import RichTextField
 from institution.tasks import set_admission_as_inactive, send_email_to_subscriber
 # Create your models here.
@@ -48,6 +47,10 @@ class InstitutionSubject(models.Model):
     level = models.CharField(
         max_length=10, choices=LEVEL_CHOICES)
     active = models.BooleanField(default=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.institute_subjects = None
 
     def __str__(self):
         return self.subject_name

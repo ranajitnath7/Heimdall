@@ -62,7 +62,7 @@ class ApplicantProfile(models.Model):
 
 class ApplicantPrevEducation(models.Model):
     BOARD_CHOICES = (
-        ('Kolkata', 'Kolkata'),
+        ('Dhaka', 'Dhaka'),
         ('Khulna', 'Khulna'),
         ('Rajshahi', 'Rajshahi'),
         ('Rajshahi', 'Rajshahi'),

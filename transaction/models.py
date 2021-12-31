@@ -3,8 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from applications.models import Application
-from institution.models import InstitutionProfile, AdmissionSession, InstitutionSubject
-# Create your models here.
+from institution.models import InstitutionProfile
 
 
 class InstitutionTransactionMethod(models.Model):
@@ -57,7 +56,7 @@ class ApplicationPayment(models.Model):
 
 # Payment
 @receiver(post_save, sender=ApplicationPayment)
-def applicant_payment(sender, instance, created, **kwargs):
+def applicant_payment(instance, created):
     if not instance.completed:
         if created and instance.application.status == '3':
             instance.application.status = '0'

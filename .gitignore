@@ -1,9 +1,4 @@
-/.idea/.gitignore
-/.idea/Heimdall.iml
-/.idea/modules.xml
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/vcs.xml
+node_modules
 
 ### Django ###
 *.log
@@ -110,12 +105,12 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# Spyder myproject settings
+.spydermyproject
+.spymyproject
 
-# Rope project settings
-.ropeproject
+# Rope myproject settings
+.ropemyproject
 
 # mkdocs documentation
 /site
@@ -127,5 +122,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/.idea/misc.xml
-/.idea/dataSources.xml
