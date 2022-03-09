@@ -15,7 +15,7 @@
       "template.openshift.io/bindable": "false"
     }
   },
-  "message": "The following service(s) have been created in your myproject: ${NAME}, ${DATABASE_SERVICE_NAME}.\n\nFor more information about using this template, including OpenShift considerations, see https://github.com/sclorg/django-ex/blob/master/README.md.",
+  "message": "The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.\n\nFor more information about using this template, including OpenShift considerations, see https://github.com/sclorg/django-ex/blob/master/README.md.",
   "labels": {
       "template": "django-psql-example",
       "app": "django-psql-example"
@@ -461,7 +461,7 @@
     {
       "name": "CONTEXT_DIR",
       "displayName": "Context Directory",
-      "description": "Set this to the relative path to your myproject if it is not in the root of your repository."
+      "description": "Set this to the relative path to your project if it is not in the root of your repository."
     },
     {
       "name": "APPLICATION_DOMAIN",
